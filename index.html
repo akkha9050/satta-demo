@@ -2,76 +2,187 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Satta Demo</title>
+<title>Satta Demo – Player</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body{
-  font-family: Arial, sans-serif;
-  background:#f4f6f8;
-  text-align:center;
-  padding:30px;
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
 }
-.box{
+header{
+  background:#111;
+  color:#fff;
+  padding:12px;
+  text-align:center;
+}
+.wallet{
   background:#fff;
-  padding:25px;
-  border-radius:10px;
-  max-width:420px;
-  margin:auto;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
+  margin:10px;
+  padding:10px;
+  border-radius:8px;
+}
+.wallet button{
+  padding:6px 10px;
+  margin:5px;
+}
+.balance{
+  font-size:18px;
+  font-weight:bold;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  padding:10px;
+}
+.number{
+  background:#fff;
+  border-radius:6px;
+  padding:10px 5px;
+  text-align:center;
+  cursor:pointer;
+  border:2px solid #ddd;
+}
+.number.active{
+  background:#ffeaa7;
+  border-color:#f39c12;
+}
+.number span{
+  display:block;
+  font-size:12px;
+  margin-top:5px;
+  color:#333;
+}
+.panel{
+  background:#fff;
+  margin:10px;
+  padding:10px;
+  border-radius:8px;
+}
+.panel h3{
+  margin-top:0;
+}
+.history{
+  font-size:14px;
+}
+.history div{
+  border-bottom:1px solid #eee;
+  padding:4px 0;
+}
+input{
+  padding:6px;
+  width:80px;
 }
 button{
-  width:100%;
-  padding:14px;
-  margin:10px 0;
-  font-size:18px;
-  border:none;
-  border-radius:8px;
   cursor:pointer;
 }
-.player{ background:#4CAF50; color:#fff; }
-.admin{ background:#2196F3; color:#fff; }
-.note{ color:#666; font-size:14px; margin-top:15px; }
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>🎯 Satta Demo</h2>
+<header>
+  <h2>Satta Demo – Player</h2>
+</header>
 
-  <button class="player" onclick="goPlayer()">▶ Player Panel</button>
-  <button class="admin" onclick="goAdmin()">🔐 Admin Panel</button>
+<div class="wallet">
+  Wallet Balance: ₹ <span class="balance" id="balance">0</span><br>
+  <button onclick="addMoney()">Add ₹100</button>
+  <button onclick="withdraw()">Withdraw ₹50</button>
+</div>
 
-  <div class="note">
-    Player aur Admin dono alag-alag secure hain
-  </div>
+<div class="grid" id="grid"></div>
+
+<div class="panel">
+  <h3>Bet History</h3>
+  <div class="history" id="history"></div>
 </div>
 
 <script>
-/* ---------- ADMIN PASSWORD SYSTEM ---------- */
-if(!localStorage.getItem("adminPassword")){
-  let p = prompt("Set Admin Password (one time)");
-  if(p){
-    localStorage.setItem("adminPassword", p);
-    alert("Admin password set successfully");
-  }
+// ---------- INIT ----------
+let wallet = Number(localStorage.getItem("wallet")) || 500;
+let bets = JSON.parse(localStorage.getItem("bets")) || {};
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+document.getElementById("balance").innerText = wallet;
+
+// ---------- GRID ----------
+const grid = document.getElementById("grid");
+for(let i=1;i<=100;i++){
+  let d = document.createElement("div");
+  d.className="number";
+  d.id="num"+i;
+  d.innerHTML = i + "<span id='amt"+i+"'></span>";
+  d.onclick = ()=>placeBet(i);
+  grid.appendChild(d);
 }
 
-/* ---------- NAVIGATION ---------- */
-function goPlayer(){
-  window.location.href = "otp.html";
+// ---------- PLACE BET ----------
+function placeBet(num){
+  let amount = prompt("Enter bet amount (min 5)");
+  amount = Number(amount);
+  if(amount<5 || isNaN(amount)) return alert("Minimum bet ₹5");
+
+  if(wallet < amount) return alert("Insufficient balance");
+
+  wallet -= amount;
+  bets[num] = (bets[num]||0) + amount;
+
+  history.unshift("Bet ₹"+amount+" on "+num);
+
+  save();
+  render();
 }
 
-function goAdmin(){
-  let input = prompt("Enter Admin Password");
-  if(input === localStorage.getItem("adminPassword")){
-    localStorage.setItem("adminLogged","yes");
-    window.location.href = "admin.html";
-  }else{
-    alert("Wrong password ❌");
-  }
+// ---------- WALLET ----------
+function addMoney(){
+  wallet += 100;
+  history.unshift("Added ₹100");
+  save(); render();
 }
+
+function withdraw(){
+  if(wallet < 50) return alert("Minimum withdraw ₹50");
+  wallet -= 50;
+  history.unshift("Withdraw ₹50 (demo)");
+  save(); render();
+}
+
+// ---------- RENDER ----------
+function render(){
+  document.getElementById("balance").innerText = wallet;
+
+  for(let i=1;i<=100;i++){
+    let box = document.getElementById("num"+i);
+    let amt = document.getElementById("amt"+i);
+    if(bets[i]){
+      box.classList.add("active");
+      amt.innerText = "₹"+bets[i];
+    }else{
+      box.classList.remove("active");
+      amt.innerText = "";
+    }
+  }
+
+  let h = document.getElementById("history");
+  h.innerHTML = "";
+  history.slice(0,20).forEach(x=>{
+    let d=document.createElement("div");
+    d.innerText=x;
+    h.appendChild(d);
+  });
+}
+
+// ---------- SAVE ----------
+function save(){
+  localStorage.setItem("wallet",wallet);
+  localStorage.setItem("bets",JSON.stringify(bets));
+  localStorage.setItem("history",JSON.stringify(history));
+}
+
+render();
 </script>
 
 </body>
