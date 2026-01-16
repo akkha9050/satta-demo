@@ -1,26 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Satta Demo</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Satta Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  text-align:center;
+  padding:30px;
+}
+.box{
+  background:#fff;
+  padding:25px;
+  border-radius:10px;
+  max-width:420px;
+  margin:auto;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+button{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+.player{ background:#4CAF50; color:#fff; }
+.admin{ background:#2196F3; color:#fff; }
+.note{ color:#666; font-size:14px; margin-top:15px; }
+</style>
 </head>
-<body style="font-family: Arial; text-align:center; padding-top:50px;">
 
-  <h1>Welcome</h1>
-  <h2>Satta Demo Game</h2>
+<body>
 
-  <br><br>
+<div class="box">
+  <h2>🎯 Satta Demo</h2>
 
-  <a href="otp.html">
-    <button style="padding:15px 30px;font-size:18px;">Start Game</button>
-  </a>
+  <button class="player" onclick="goPlayer()">▶ Player Panel</button>
+  <button class="admin" onclick="goAdmin()">🔐 Admin Panel</button>
 
-  <br><br>
+  <div class="note">
+    Player aur Admin dono alag-alag secure hain
+  </div>
+</div>
 
-  <a href="admin.html">
-    <button style="padding:10px 20px;">Admin Panel</button>
-  </a>
+<script>
+/* ---------- ADMIN PASSWORD SYSTEM ---------- */
+if(!localStorage.getItem("adminPassword")){
+  let p = prompt("Set Admin Password (one time)");
+  if(p){
+    localStorage.setItem("adminPassword", p);
+    alert("Admin password set successfully");
+  }
+}
+
+/* ---------- NAVIGATION ---------- */
+function goPlayer(){
+  window.location.href = "otp.html";
+}
+
+function goAdmin(){
+  let input = prompt("Enter Admin Password");
+  if(input === localStorage.getItem("adminPassword")){
+    localStorage.setItem("adminLogged","yes");
+    window.location.href = "admin.html";
+  }else{
+    alert("Wrong password ❌");
+  }
+}
+</script>
 
 </body>
 </html>
