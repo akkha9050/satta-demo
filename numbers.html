@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Select Number</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .num {
+      border: 1px solid #333;
+      padding: 15px;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Select Number (1–100)</h2>
+
+<div class="grid" id="numberGrid"></div>
+
+<script>
+/* =========================
+   AUTO TIME OPEN / CLOSE
+   ========================= */
+
+function isBettingOpen() {
+
+  // 🔧 CHANGE TIME HERE
+  let openHour = 0;      // 9 AM
+  let openMinute = 0;
+
+  let closeHour = 23;    // 8 PM
+  let closeMinute = 59;
+  // -----------------------
+
+  let now = new Date();
+
+  let openTime = new Date();
+  openTime.setHours(openHour, openMinute, 0, 0);
+
+  let closeTime = new Date();
+  closeTime.setHours(closeHour, closeMinute, 0, 0);
+
+  return now >= openTime && now <= closeTime;
+}
+
+/* =========================
+   NUMBER GRID + BET LOGIC
+   ========================= */
+
+const grid = document.getElementById("numberGrid");
+let bets = JSON.parse(localStorage.getItem("bets")) || {};
+
+for (let i = 1; i <= 100; i++) {
+
+  let div = document.createElement("div");
+  div.className = "num";
+  div.innerText = i;
+
+  div.onclick = function () {
+
+    // ⛔ TIME CHECK
+    if (!isBettingOpen()) {
+      alert("Betting is CLOSED (Time Over)");
+      return;
+    }
+
+    let amount = prompt("Enter bet amount (Min ₹5)");
+    amount = parseInt(amount);
+
+    if (amount && amount >= 5) {
+
+      if (bets[i]) {
+        bets[i] = bets[i] + amount;
+      } else {
+        bets[i] = amount;
+      }
+
+      localStorage.setItem("bets", JSON.stringify(bets));
+      localStorage.setItem("lastBetNumber", i);
+      localStorage.setItem("lastBetAmount", amount);
+
+      alert("Bet placed on " + i + " for ₹" + amount);
+
+    } else {
+      alert("Minimum bet is ₹5");
+    }
+  };
+
+  grid.appendChild(div);
+}
+</script>
+
+</body>
+</html>

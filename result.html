@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Result</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .box {
+      border: 2px solid #333;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 300px;
+      margin: auto;
+    }
+
+    .win {
+      color: green;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .lose {
+      color: red;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Game Result</h2>
+
+<div class="box">
+  <div id="resultText">Checking...</div>
+</div>
+
+<script>
+  let winningNumber = localStorage.getItem("winningNumber");
+  let userNumber = localStorage.getItem("lastBetNumber");
+  let userAmount = localStorage.getItem("lastBetAmount");
+
+  let resultBox = document.getElementById("resultText");
+
+  if (!winningNumber) {
+    resultBox.innerHTML = "Result not declared";
+  } 
+  else if (winningNumber === userNumber) {
+
+    let winAmount = userAmount * 90; // payout logic
+
+    resultBox.innerHTML =
+      "<div class='win'>🎉 You Win!</div>" +
+      "<p>Number: " + userNumber + "</p>" +
+      "<p>Bet: ₹" + userAmount + "</p>" +
+      "<p><b>Winning: ₹" + winAmount + "</b></p>";
+
+  } 
+  else {
+    resultBox.innerHTML =
+      "<div class='lose'>❌ You Lost</div>" +
+      "<p>Your Number: " + userNumber + "</p>" +
+      "<p>Winning Number: " + winningNumber + "</p>";
+  }
+</script>
+
+</body>
+</html>
