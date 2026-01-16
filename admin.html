@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+h2{text-align:center}
+.box{background:#fff;padding:20px;border-radius:10px;margin-bottom:20px}
+button{padding:10px 15px;margin:5px;font-size:16px}
+.green{color:green;font-weight:bold}
+.red{color:red;font-weight:bold}
+</style>
+</head>
+
+<body>
+
+<script>
+/* ===== PASSWORD CHECK ===== */
+let saved = localStorage.getItem("adminPassword");
+
+if(!saved){
+  let set = prompt("Set Admin Password");
+  if(!set){
+    alert("Password required");
+    location.href="index.html";
+  }
+  localStorage.setItem("adminPassword", set.trim());
+  saved = set.trim();
+}
+
+let input = prompt("Enter Admin Password");
+if(!input || input.trim() !== saved){
+  alert("Wrong Password ❌");
+  location.href="index.html";
+}
+</script>
+
+<h2>Admin Panel</h2>
+
+<div class="box">
+  <button onclick="declareResult()">Declare Result</button>
+  <button onclick="resetAll()">Reset All</button>
+</div>
+
+<div class="box">
+  <h3>Bet Summary</h3>
+  <div id="summary"></div>
+</div>
+
+<div class="box">
+  <h3>Profit Calculation</h3>
+  <div id="profit"></div>
+</div>
+
+<script>
+let bets = JSON.parse(localStorage.getItem("bets")||"{}");
+let win = localStorage.getItem("winningNumber");
+
+function load(){
+  let total = 0;
+  let html = "";
+
+  for(let n in bets){
+    total += bets[n];
+    html += `Number ${n} → ₹${bets[n]}<br>`;
+  }
+
+  document.getElementById("summary").innerHTML =
+    html || "No bets placed";
+
+  let payout = 0;
+  let multiplier = 90; // later 9x / 10x
+
+  if(win && bets[win]){
+    payout = bets[win] * multiplier;
+  }
+
+  let profit = total - payout;
+
+  let phtml = `
+    Total Collection: ₹${total}<br>
+    Winning Number: ${win || "Not Declared"}<br>
+    Payout: ₹${payout}<br>
+    <hr>
+    ${profit>=0
+      ? `<span class="green">PROFIT: ₹${profit}</span>`
+      : `<span class="red">LOSS: ₹${profit}</span>`
+    }
+  `;
+
+  document.getElementById("profit").innerHTML = phtml;
+}
+
+load();
+
+function resetAll(){
+  if(confirm("Reset everything?")){
+    localStorage.removeItem("bets");
+    localStorage.removeItem("winningNumber");
+    alert("All data cleared");
+    location.reload();
+  }
+}
+
+function declareResult(){
+  let r = prompt("Enter Winning Number");
+  if(r){
+    localStorage.setItem("winningNumber", r);
+    alert("Result Declared");
+    location.reload();
+  }
+}
+</script>
+
+</body>
+</html>
