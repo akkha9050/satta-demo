@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Withdraw History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+.card{background:#fff;padding:15px;border-radius:10px}
+h2{text-align:center}
+.req{color:#f59e0b}
+.done{color:#16a34a}
+</style>
+</head>
+
+<body>
+
+<h2>📜 Withdraw History</h2>
+<div class="card" id="list"></div>
+
+<script>
+let h = JSON.parse(localStorage.getItem("withdrawHistory")||"[]");
+let out = "";
+
+h.forEach(x=>{
+  out += `
+    Amount: ₹${x.amount}<br>
+    Status: <b class="${x.status==='Requested'?'req':'done'}">${x.status}</b><br>
+    <small>${x.time}</small>
+    <hr>
+  `;
+});
+
+document.getElementById("list").innerHTML = out || "No withdraw requests";
+</script>
+
+</body>
+</html>

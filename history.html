@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My Bet History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+h2{text-align:center}
+.box{background:#fff;padding:15px;border-radius:10px}
+</style>
+</head>
+
+<body>
+
+<h2>My Bet History</h2>
+
+<div class="box" id="list"></div>
+
+<script>
+let h = JSON.parse(localStorage.getItem("history")||"[]");
+let out = "";
+
+h.forEach(x=>{
+  out += `Number ${x.number} → ₹${x.amount}<br><small>${x.time}</small><hr>`;
+});
+
+document.getElementById("list").innerHTML =
+  out || "No bets yet";
+</script>
+
+</body>
+</html>

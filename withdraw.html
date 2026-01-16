@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Withdraw</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+.card{background:#fff;padding:20px;border-radius:10px;max-width:420px;margin:auto}
+h2{text-align:center}
+input,button{
+  width:100%;padding:12px;margin:10px 0;
+  font-size:16px;border-radius:8px
+}
+button{background:#ef4444;color:#fff;border:none}
+.small{color:#666;font-size:14px;text-align:center}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>💸 Withdraw (Demo)</h2>
+
+  <p>Wallet Balance: ₹<b id="bal">0</b></p>
+
+  <input id="amt" type="number" placeholder="Enter amount (₹100 min)">
+  <button onclick="withdraw()">Request Withdraw</button>
+
+  <p class="small">Demo only — no real payout</p>
+</div>
+
+<script>
+let wallet = Number(localStorage.getItem("wallet")||0);
+document.getElementById("bal").innerText = wallet;
+
+function withdraw(){
+  let a = Number(document.getElementById("amt").value);
+
+  if(!a || a < 100){
+    alert("Minimum withdraw ₹100");
+    return;
+  }
+  if(wallet < a){
+    alert("Insufficient balance");
+    return;
+  }
+
+  // deduct wallet (demo hold)
+  wallet -= a;
+  localStorage.setItem("wallet", wallet);
+
+  // save withdraw history
+  let wh = JSON.parse(localStorage.getItem("withdrawHistory")||"[]");
+  wh.push({
+    amount:a,
+    status:"Requested",
+    time:new Date().toLocaleString()
+  });
+  localStorage.setItem("withdrawHistory", JSON.stringify(wh));
+
+  alert("Withdraw request submitted");
+  location.href="numbers.html";
+}
+</script>
+
+</body>
+</html>

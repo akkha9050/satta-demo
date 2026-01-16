@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Wallet History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+.card{background:#fff;padding:15px;border-radius:10px}
+h2{text-align:center}
+</style>
+</head>
+
+<body>
+<h2>📜 Wallet History</h2>
+<div class="card" id="list"></div>
+
+<script>
+let h = JSON.parse(localStorage.getItem("walletHistory")||"[]");
+let out="";
+h.forEach(x=>{
+  out += `${x.type} ₹${x.amount}<br><small>${x.time}</small><hr>`;
+});
+document.getElementById("list").innerHTML = out || "No history";
+</script>
+</body>
+</html>
